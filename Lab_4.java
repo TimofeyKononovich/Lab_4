@@ -8,6 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.*;
+import java.beans.Transient;
 
 class GraphicsDisplay extends JPanel {
     private Double[][] graphicsData;
@@ -22,9 +23,9 @@ class GraphicsDisplay extends JPanel {
     // Используемый масштаб отображения
     private double scale;
     // Различные стили черчения линий
-    BasicStroke graphicsStroke;
-    BasicStroke axisStroke;
-    BasicStroke markerStroke;
+    private transient BasicStroke graphicsStroke;
+    private transient BasicStroke axisStroke;
+    private transient BasicStroke markerStroke;
     // Различные шрифты отображения надписей
     private Font axisFont;
 
@@ -33,7 +34,7 @@ class GraphicsDisplay extends JPanel {
         // Сконструировать необходимые объекты, используемые в рисовании Перо для
         // рисования графика
         graphicsStroke = new BasicStroke(5.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f,
-                new float[] { 10, 10, 10, 10, 10, 10, 40, 10, 20, 10, 20 }, 0.0f);
+                new float[] { 40, 10, 20, 10, 10, 10, 20, 10, 40 }, 0.0f);
         // Перо для рисования осей координат
         axisStroke = new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, null, 0.0f);
         // Перо для рисования контуров маркеров
@@ -166,15 +167,20 @@ class GraphicsDisplay extends JPanel {
             // Выбрать зеленый цвет для закрашивания маркеров внутри
             canvas.setPaint(Color.GREEN);
             double x1 = graphicsData[i][1];
-            int integer = (int) x1;
-            if (integer % 2 == 1 || integer % 2 == -1) {
+            int integer = (int) Math.abs(x1);
+            int sum = 0;
+            while (integer > 0) {
+                sum += (integer % 10);
+                integer /= 10;
+
+            }
+            if (sum < 10) {
                 GeneralPath path = new GeneralPath();
                 Point2D.Double center = xyToPoint(graphicsData[i][0], graphicsData[i][1]);
-                path.moveTo(center.x - 5, center.y);
-                path.lineTo(center.x, center.y - 5);
-                path.lineTo(center.x + 5, center.y);
-                path.lineTo(center.x, center.y + 5);
-                path.lineTo(center.x - 5, center.y);
+                path.moveTo(center.x - 4, center.y + 3);
+                path.lineTo(center.x + 4, center.y - 3);
+                path.lineTo(center.x + 4, center.y + 4);
+                path.lineTo(center.x - 3, center.y);
                 canvas.draw(path);
             } else {
                 // Выбрать красный цвет для закрашивания маркеров внутри
@@ -428,5 +434,9 @@ class MainFrame extends JFrame {
 
 class Lab_4 {
     public static void main(String[] args) {
+        // Создать и показать экземпляр главного окна приложения
+        MainFrame frame = new MainFrame();
+        frame.setDefaultCloseOperation(3);
+        frame.setVisible(true);
     }
 }
